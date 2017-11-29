@@ -37,10 +37,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/js/**",
             "/image/**",
             "/",
-            "/myAccount",
+//            "/myProfile",
             "/newUser",
             "/forgetPassword",
-    };
+            "/login",
+            "/fonts/**" //если не добавлять сюда "/fonts/**", то при login будет загружать файл glyphicons-halfings-regular
+       };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -50,7 +52,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http
                 .csrf().disable().cors().disable()
-                .formLogin().failureUrl("/login?error").defaultSuccessUrl("/")
+                .formLogin().failureUrl("/login?error")
+//                .defaultSuccessUrl("/")
                 .loginPage("/login").permitAll()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

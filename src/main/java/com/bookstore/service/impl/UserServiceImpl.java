@@ -35,22 +35,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PasswordResetToken getPasswordResetToken(final String token) {
         return passwordResetTokenRepository.findByToken(token);
     }
 
     @Override
+    @Transactional
     public void createPasswordResetTokenForUser(final User user, final String token) {
-        final PasswordResetToken myToken = new PasswordResetToken(token, user);
+        final PasswordResetToken myToken;
+//        if(userRepository.exists(user.getId())){
+//
+//            myToken.updateToken(token);
+//        }
+        myToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.save(myToken);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -69,6 +78,12 @@ public class UserServiceImpl implements UserService {
             localUser = userRepository.save(user);
         }
         return localUser;
+    }
+
+    @Override
+    @Transactional
+    public User save(User user) {
+       return userRepository.save(user);
     }
 }
 

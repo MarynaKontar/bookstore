@@ -58,16 +58,48 @@ public class HomeController {
         return "myAccount";
     }
 
+//    @GetMapping("myProfile")
+//    public String myProfile() {
+//        return "myProfile";
+//    }
+
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("classActiveLogin", true);
         return "myAccount";
     }
 
-    @GetMapping("/forgetPassword")
-    public String forgetPassword(Model model) {
-
+    @PostMapping("/forgetPassword")
+    public String forgetPassword(HttpServletRequest request,
+                                 @ModelAttribute("email") String email,
+                                 Model model
+    ) {
         model.addAttribute("classActiveForgetPassword", true);
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            model.addAttribute("emailNotExist", true);
+            return "myAccount";
+        }
+
+        //TODO перенести в сервис и @Transactional
+        //set user new password
+        String password = SecurityUtility.randomPassword();
+        String encryptedPassword = SecurityUtility.passwordEncoder().encode(password);
+        user.setPassword(encryptedPassword);
+
+        userService.save(user);
+
+        String token = UUID.randomUUID().toString();
+        userService.createPasswordResetTokenForUser(user, token);
+
+        String applUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+
+        SimpleMailMessage newEmail = mailConstructor.constructResetTokenEmail(applUrl, request.getLocale(),
+                token, user, password);
+
+        mailSender.send(newEmail);
+        model.addAttribute("forgetPasswordEmailSend", true);
+
         return "myAccount";
     }
 
@@ -91,6 +123,8 @@ public class HomeController {
             model.addAttribute("emailExists", true);
             return "myAccount";
         }
+
+        //TODO перенести в сервис и @Transactional
         User user = new User();
         user.setUsername(username);
         user.setEmail(userEmail);

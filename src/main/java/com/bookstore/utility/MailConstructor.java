@@ -25,7 +25,7 @@ public class MailConstructor {
                                                       User user, String password) {
         String url = contextPath + "/newUser?token=" + token;
         String message = "\n ЗАЯ, ПРОСТИ, ЭТО Я ТРЕНЕРУЮСЬ ОТПРАВЛЯТЬ EMAIL ЧЕРЕЗ СВОЕ ПРИЛОЖЕНИЕ. " +
-                "\nНЕ ТРОГАЙ, Я ПОТОРМ ВСЕ УДАЛЮ" +
+                "\nНЕ ТРОГАЙ, Я ПОТОМ ВСЕ УДАЛЮ" +
                 "\nPlease click on this link to verify your email and edit your personal information." +
                 "Your password is: \n" + password;
         SimpleMailMessage email = new SimpleMailMessage();

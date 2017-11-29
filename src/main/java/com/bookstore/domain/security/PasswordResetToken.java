@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 public class PasswordResetToken {
 
-    public static final int EXPIRATION = 60 * 24;
+    public static final int EXPIRATION = 60 * 24; //how long will be save token in minutes //1 day
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
