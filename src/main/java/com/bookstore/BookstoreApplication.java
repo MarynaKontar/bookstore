@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @SpringBootApplication
-public class BookstoreApplication implements CommandLineRunner{
+public class BookstoreApplication
+//		extends SpringBootServletInitializer //need if we want to create a deployable war file
+		implements CommandLineRunner{
 
 	@Autowired
 	private UserService userService;
@@ -22,6 +26,12 @@ public class BookstoreApplication implements CommandLineRunner{
 	public static void main(String[] args) {
 		SpringApplication.run(BookstoreApplication.class, args);
 	}
+
+	//need if we want to create a deployable war file
+//	@Override
+//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//		return application.sources(BookstoreApplication.class);
+//	}
 
 	@Override
 	public void run(String... strings) throws Exception {
