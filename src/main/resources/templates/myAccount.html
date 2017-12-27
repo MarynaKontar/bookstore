@@ -50,7 +50,7 @@
                                         &nbsp;<span style="color: red;" th:if="${usernameExists}">Username already exists.
                                         Choose a different one.</span>
                                         <input required="required" type="text" class="form-control"
-                                               id="newUsername" name="username"/>
+                                               id="newUsername" name="username" autofocus="autofocus"/>
                                         <p style="color: #828282">Enter your username here</p>
                                     </div>
 
@@ -84,15 +84,21 @@
                                 <form th:action="@{/login}" method="post">
                                     <div class="form-group">
                                         <label for="username">* Username: </label>
+                                        <div class="input-group">
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                                         <input required="required" type="text" class="form-control"
-                                               id="username" name="username"/>
+                                               id="username" name="username" autofocus="autofocus"/>
+                                        </div>
                                         <p style="color: #828282">Enter your username here</p>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="password">* Password: </label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                                         <input required="required" type="password" class="form-control"
                                                id="password" name="password"/>
+                                        </div>
                                         <p style="color: #828282">Enter the password that accompanies your
                                             username. </p>
                                     </div>
@@ -117,7 +123,7 @@
                                     <div class="form-group">
                                         <label for="recoverEmail">* Your Email: </label>
                                         <input required="required" type="email" class="form-control"
-                                               id="recoverEmail" name="email"/>
+                                               id="recoverEmail" name="email" autofocus="autofocus"/>
                                         <p style="color: #828282">Enter your registered email address here</p>
                                     </div>
 

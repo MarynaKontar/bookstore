@@ -1,9 +1,12 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.domain.Billing;
+import com.bookstore.domain.Payment;
 import com.bookstore.domain.User;
 import com.bookstore.domain.security.PasswordResetToken;
 import com.bookstore.domain.security.UserRole;
 import com.bookstore.repository.PasswordResetTokenRepository;
+import com.bookstore.repository.PaymentRepository;
 import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.service.UserService;
@@ -24,14 +27,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PaymentRepository paymentRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    public UserServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository,
-                           UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository, UserRepository userRepository, RoleRepository roleRepository, PaymentRepository paymentRepository) {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -84,6 +88,27 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User save(User user) {
        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void addOrUpdatePayment(User user, Payment payment, Billing billing) {
+
+        //for update credit card (payment)
+        if(billing.getId() != null){payment.removeBilling();}
+        if(payment.getId() != null){
+            Payment payment1 = paymentRepository.findOne(payment.getId());
+            //if updated credit card is default:
+            if(payment1.isDefaultPayment()){payment.setDefaultPayment(true);}
+            user.removePayment(payment1);
+        } else {//for new credit card
+            //make all user payments non default except new payment
+            user.getPaymentList().forEach(payment1 -> payment1.setDefaultPayment(false));
+            payment.setDefaultPayment(true);}
+
+        payment.addBilling(billing);
+        user.addPayment(payment);
+        userRepository.save(user);
     }
 }
 

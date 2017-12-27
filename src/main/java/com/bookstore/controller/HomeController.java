@@ -1,6 +1,8 @@
 package com.bookstore.controller;
 
 import com.bookstore.domain.User;
+import com.bookstore.domain.Shipping;
+import com.bookstore.domain.enums.UsaStatesConstants;
 import com.bookstore.domain.security.PasswordResetToken;
 import com.bookstore.domain.security.Role;
 import com.bookstore.domain.security.UserRole;
@@ -17,16 +19,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.security.Principal;
+import java.util.*;
 
 /**
  * Created by User on 09.11.2017.
@@ -53,20 +50,38 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String login(Model model) {
+        model.addAttribute("classActiveLogin", true);
+        return "myAccount";
+    }
+
     @GetMapping("myAccount")
     public String myAccount() {
         return "myAccount";
     }
 
-//    @GetMapping("myProfile")
-//    public String myProfile() {
-//        return "myProfile";
-//    }
+    @GetMapping("myProfile")
+    public String myProfile(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        if (user != null) {
+            model.addAttribute("user", user);
+            model.addAttribute("userPaymentList", user.getPaymentList());
+            model.addAttribute("userShippingList", user.getShippingList());
+//            model.addAttribute("orderList", user.getOrderList());
+//            model.addAttribute("classActiveBilling", true);
+            model.addAttribute("listOfShippingAddresses", true);
+            model.addAttribute("listOfCreditCards", true);
 
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("classActiveLogin", true);
-        return "myAccount";
+            Shipping userShipping = new Shipping();
+            model.addAttribute("userShipping", userShipping);
+//            List<String> stateList = USConstants.listOfUSStatesCode;
+//            Collections.sort(stateList);
+//            model.addAttribute("stateList", stateList);
+            model.addAttribute("stateList", UsaStatesConstants.values());
+            model.addAttribute("classActiveEdit", true);
+            return "myProfile";
+        } else return "myAccount";
     }
 
     @PostMapping("/forgetPassword")
@@ -105,11 +120,8 @@ public class HomeController {
 
     @PostMapping("/newUser")
     public String newUserPost(
-            HttpServletRequest request,
-            @ModelAttribute("email") String userEmail,
-            @ModelAttribute("username") String username,
-            Model model
-    ) throws Exception {
+            HttpServletRequest request, @ModelAttribute("email") String userEmail,
+            @ModelAttribute("username") String username, Model model) throws Exception {
         model.addAttribute("classActiveNewAccount", true);
         model.addAttribute("email", userEmail);
         model.addAttribute("username", username);
@@ -180,6 +192,6 @@ public class HomeController {
 
         model.addAttribute("user", user);
         model.addAttribute("classActiveEdit", true);
-        return "myProfile";
+        return "myProfile/" + user.getUsername();
     }
 }

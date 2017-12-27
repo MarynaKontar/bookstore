@@ -80,7 +80,8 @@
                 </div>
 
                 <hr/>
-                <p th:text="${book.description}"></p>
+                <!--utext - use instead text to hide tags from description field when copy and edit text with any formats-->
+                <p th:utext="${book.description}"></p>
             </div>
         </div>
     </form>

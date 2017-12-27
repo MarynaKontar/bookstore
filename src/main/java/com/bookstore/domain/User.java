@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,6 +31,15 @@ public class User implements UserDetails {
     private String email;
     private String phone;
     private boolean enabled = true;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Shipping> shippingList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Payment> paymentList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Order> orderList;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
@@ -102,6 +112,30 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
+    public List<Shipping> getShippingList() {
+        return shippingList;
+    }
+
+    public void setShippingList(List<Shipping> shippingList) {
+        this.shippingList = shippingList;
+    }
+
+    public List<Payment> getPaymentList() {
+        return paymentList;
+    }
+
+    public void setPaymentList(List<Payment> paymentList) {
+        this.paymentList = paymentList;
+    }
+
+    public List<Order> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<Order> orderList) {
+        this.orderList = orderList;
+    }
+
     public Set<UserRole> getUserRoles() {
         return userRoles;
     }
@@ -132,4 +166,45 @@ public class User implements UserDetails {
         authorities.forEach(System.out::println);
         return authorities;
     }
+
+/** http://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#associations-one-to-many
+ *  Bidirectional @OneToMany association : must make sure both sides are in-sync at all times.
+ * The add...(...) and remove...(...) are utilities methods that synchronize both ends whenever a child element
+ * is added or removed.
+ * For bidirectional association every element removal only requires a single update
+ * (in which the foreign key column is set to NULL), and, if the child entity lifecycle is bound to its owning parent
+ * so that the child cannot exist without its parent, then we can annotate the association with the orphan-removal
+ * attribute and disassociating the child will trigger a delete statement on the actual child table row as well.
+ * **/
+
+    public void addShipping(Shipping shipping) {
+        shippingList.add( shipping );
+        shipping.setUser( this );
+    }
+
+    public void removeShipping(Shipping shipping) {
+        shippingList.remove( shipping );
+        shipping.setUser( null );
+    }
+
+    public void addPayment(Payment payment) {
+        paymentList.add( payment );
+        payment.setUser( this );
+    }
+
+    public void removePayment(Payment payment) {
+        paymentList.remove( payment );
+        payment.setUser( null );
+    }
+
+    public void addOrder(Order order) {
+        orderList.add( order );
+        order.setUser( this );
+    }
+
+    public void removeOrder(Order order) {
+        orderList.remove( order );
+        order.setUser( null );
+    }
+
 }

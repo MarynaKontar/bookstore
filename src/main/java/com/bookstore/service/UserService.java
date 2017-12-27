@@ -1,9 +1,10 @@
 package com.bookstore.service;
 
+import com.bookstore.domain.Billing;
+import com.bookstore.domain.Payment;
 import com.bookstore.domain.User;
 import com.bookstore.domain.security.PasswordResetToken;
 import com.bookstore.domain.security.UserRole;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
@@ -23,4 +24,6 @@ public interface UserService {
     User createUser(User user, Set<UserRole> userRoles) throws Exception;
 
     User save(User user);
+
+    void addOrUpdatePayment(User user, Payment payment, Billing billing);
 }

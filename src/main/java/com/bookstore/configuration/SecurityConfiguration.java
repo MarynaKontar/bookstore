@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/login",
             "/fonts/**", //если не добавлять сюда "/fonts/**", то при login будет загружать файл glyphicons-halfings-regular
             "/book/bookshelf",
-            "/book/bookDetail"
+            "/book/bookDetail/**"
        };
 
     @Override
