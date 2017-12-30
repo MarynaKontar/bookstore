@@ -122,4 +122,28 @@ public class CreditCardController {
             return "myProfile";
         }
     }
+
+    @GetMapping("/remove")
+    public String remove(@ModelAttribute("id") Long creditCardId, Principal principal, Model model
+    ){
+        User user = userService.findByUsername(principal.getName());
+        Payment userPayment = paymentService.findById(creditCardId);
+
+        if(user.getId() != userPayment.getUser().getId()) {
+            return "badRequestPage";
+        } else {
+            userService.deletePaymentById(creditCardId);
+            model.addAttribute("user", user);
+            model.addAttribute("listOfCreditCards", true);
+            model.addAttribute("classActiveBilling", true);
+            model.addAttribute("listOfShippingAddresses", true);
+
+            model.addAttribute("userPaymentList", user.getPaymentList());
+            model.addAttribute("userShippingList", user.getShippingList());
+            model.addAttribute("orderList", user.getOrderList());
+
+            return "myProfile";
+        }
+    }
+
 }
