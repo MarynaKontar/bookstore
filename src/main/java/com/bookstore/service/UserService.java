@@ -26,4 +26,6 @@ public interface UserService {
     User save(User user);
 
     void addOrUpdatePayment(User user, Payment payment, Billing billing);
+
+    void deletePaymentById(Long id);
 }
