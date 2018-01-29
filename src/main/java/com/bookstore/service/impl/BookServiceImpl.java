@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class BookServiceImpl implements BookService {
 
-    private BookRepository bookRepository;
-    private Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
+    private final BookRepository bookRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BookServiceImpl.class);
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository) {

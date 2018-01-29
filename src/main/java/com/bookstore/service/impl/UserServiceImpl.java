@@ -13,10 +13,16 @@ import com.bookstore.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Created by User on 16.11.2017.
@@ -27,15 +33,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PaymentRepository paymentRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+      private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    public UserServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository, UserRepository userRepository, RoleRepository roleRepository, PaymentRepository paymentRepository) {
+    public UserServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository,
+                           UserRepository userRepository, RoleRepository roleRepository) {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -90,51 +95,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    @Override
-    @Transactional
-    public void addOrUpdatePayment(User user, Payment payment, Billing billing) {
 
-        //for update credit card (payment)
-        if (billing.getId() != null) {
-            payment.removeBilling();
-        }
-        if (payment.getId() != null) {
-            Payment payment1 = paymentRepository.findOne(payment.getId());
-            //if updated credit card is default:
-            if (payment1.isDefaultPayment()) {
-                payment.setDefaultPayment(true);
-            }
-            user.removePayment(payment1);
-        } else {//for new credit card
-            //make all user payments non default except new payment
-            user.getPaymentList().forEach(payment1 -> payment1.setDefaultPayment(false));
-            payment.setDefaultPayment(true);
-        }
-
-        payment.addBilling(billing);
-        user.addPayment(payment);
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public void deletePaymentById(Long id) {
-        Payment payment = paymentRepository.findOne(id);
-        if (payment != null) {
-            User user = userRepository.findOne(payment.getUser().getId());
-
-            //if deleted payment is default
-            if (payment.isDefaultPayment()) {
-                user.getPaymentList()
-                        .stream()
-                        .findFirst()
-                        .ifPresent(payment1 -> payment1.setDefaultPayment(true));
-            }
-
-            user.removePayment(payment);
-        }
-
-    }
 }
 
 

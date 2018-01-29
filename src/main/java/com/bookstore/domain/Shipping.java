@@ -19,7 +19,7 @@ public class Shipping {
     private String state;
     private String country;
     private String zipcode;
-    private boolean userShippingDefault;
+    private boolean defaultShipping;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -93,12 +93,12 @@ public class Shipping {
         this.zipcode = zipcode;
     }
 
-    public boolean isUserShippingDefault() {
-        return userShippingDefault;
+    public boolean isDefaultShipping() {
+        return defaultShipping;
     }
 
-    public void setUserShippingDefault(boolean userShippingDefault) {
-        this.userShippingDefault = userShippingDefault;
+    public void setDefaultShipping(boolean defaultShipping) {
+        this.defaultShipping = defaultShipping;
     }
 
     public User getUser() {
